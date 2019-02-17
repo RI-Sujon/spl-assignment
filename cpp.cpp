@@ -152,17 +152,18 @@ void createTreeControl(void){
 
 }
 
-void getTagAttributeOrString(Node *parent,string tagStr,char ch){
+void getTagAttributeOrString(Node *current,string tagStr,char ch){
 
-    if(parent->tag == tagStr){
+    if(current->tag == tagStr){
         string str ;
         for(int i=0 ; i<10 ; i++){
-            if((parent->children[i])!=NULL )
+            if((current->children[i])!=NULL )
             {
-                str = parent->children[i]->tag ;
-                if(str[0]==ch)
-                    //str.replace(0,1,"") ;
+                str = current->children[i]->tag ;
+                if(str[0]==ch){
+                    str.replace(0,1,"") ;
                     cout << str << "\t\t" ;
+                }
             }
 
             else return ;
@@ -171,9 +172,48 @@ void getTagAttributeOrString(Node *parent,string tagStr,char ch){
 
     for(int i=0 ; i<10 ; i++){
 
-        if((parent->children[i])!=NULL)
+        if((current->children[i])!=NULL)
         {
-            getTagAttributeOrString(parent->children[i] ,tagStr , ch) ;
+            getTagAttributeOrString(current->children[i] ,tagStr , ch) ;
+        }
+    }
+
+}
+
+void getTagParentsChildreansSublings(Node *current,string tagStr,int flag){
+
+    if(current->tag == tagStr){
+        if(flag==1){
+            if(current->parent!=NULL)
+                cout << current->parent->tag << endl ;
+            return ;
+        }
+
+        else if(flag==2){
+            for(int i=0 ; i<10 && current->children[i]!=NULL ; i++){
+                string str = current->children[i]->tag ;
+                if(str[0]!='~' && str[0]!='!'){
+                    cout << str << '\t' ;
+                }
+            }
+        }
+
+        else if(flag==3){
+
+            for(int i=0 ; i<10 && current->parent->children[i]!=NULL ;i++){
+                string str = current->parent->children[i]->tag ;
+                if(str[0]!='~' && str[0]!='!'){
+                    cout << str << '\t' ;
+                }
+            }
+        }
+    }
+
+    for(int i=0 ; i<10 ; i++){
+
+        if((current->children[i])!=NULL)
+        {
+            getTagParentsChildreansSublings(current->children[i] ,tagStr , flag) ;
         }
     }
 
@@ -186,23 +226,29 @@ void menu(){
         cout << "\nEnter Your Choice \n1.find tag\n2.get tag's attribute\n3.get tag's String\n4.get tag's parents\n5.get tag's childrens\n6.get tag's sublings\n7. exit \n " ;
         cin >> choice ;
 
+        string tagStr ;
+        cout << "Enter Tag Name : "  ;
+        cin >> tagStr ;
+
         if(choice == 1) ;//findTag() ;
         if(choice == 2){
-            string tagStr ;
-            cout << "Enter Tag Name : "  ;
-            cin >> tagStr ;
             getTagAttributeOrString(root,tagStr,'!') ;
         }
+
         if(choice == 3){
-            string tagStr ;
-            cout << "Enter Tag Name : "  ;
-            cin >> tagStr ;
             getTagAttributeOrString(root,tagStr,'~') ;
         }
-        if(choice == 4) ;
-        if(choice == 5) ;
-        if(choice == 6) ;
-        if(choice == 7) ;
+
+        if(choice == 4){
+            getTagParentsChildreansSublings(root , tagStr , 1) ;
+        }
+        if(choice == 5){
+            getTagParentsChildreansSublings(root , tagStr , 2) ;
+        }
+        if(choice == 6){
+            getTagParentsChildreansSublings(root , tagStr , 3) ;
+        }
+        if(choice == 7) break;
 
     }
 
@@ -211,7 +257,7 @@ void menu(){
 int main(void){
     createLinkList() ;
     createTreeControl() ;
-    //outputTreePreOrder(root) ;
+    outputTreePreOrder(root) ;
 
     menu() ;
 }
